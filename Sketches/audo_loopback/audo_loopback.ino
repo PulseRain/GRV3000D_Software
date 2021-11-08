@@ -1,8 +1,6 @@
 //==================================================================================================
 // PulseRain Technology, LLC
 //
-// Demonstration for Lattice MACHXO3D Breakout Board
-// 
 // Using Ctrl-U to compile and upload this sketch,
 // then use Ctrl-Shift-M to open Serial Monitor
 //
