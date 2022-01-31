@@ -24,3 +24,8 @@ After launching, please open the hardware manager
 
 ![Vivado Lab Edition](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/vivado_lab_edition_cover.png)
 
+3. Connect the board to the PC through USB port, and flip the switch on
+
+4. Click Open 
+
+![auto detect](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/auto_detect.png)
