@@ -2,8 +2,12 @@
 //===========================================================================
 // Copyright : PulseRain Technology, LLC. 2021
 //===========================================================================
-// Remarks :
-//   Top Level wrapper for NexysA7 board
+// Legal Notice :
+//   PulseRain Technology Proprietary Information
+//
+//   All contents of this file shall be treated as Proprietary Information
+//   and shall not be disclosed to any third party without the explicit
+//   permission from PulseRain Technology, LLC.
 //===========================================================================
 */
 
@@ -27,10 +31,11 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
     //=====================================================================
     // Push Button
     //=====================================================================
-        input   wire                                            BTN0,
-        input   wire                                            BTN1,
-        input   wire                                            BTN2,
-        input   wire                                            BTN3,
+        input   wire                                            BTNL,
+        input   wire                                            BTNR,
+        input   wire                                            BTNU,
+        input   wire                                            BTND,
+        input   wire                                            BTNC,
         
     
     //=====================================================================
@@ -40,30 +45,56 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
         input  wire                                             SW1,
         input  wire                                             SW2,
         input  wire                                             SW3,
+        input  wire                                             SW4,
+        input  wire                                             SW5,
+        input  wire                                             SW6,
+        input  wire                                             SW7,
+    
+    //=====================================================================
+    // Seven Segment
+    //=====================================================================
+        output wire                                             CA,
+        output wire                                             CB,
+        output wire                                             CC,
+        output wire                                             CD,
+        output wire                                             CE,
+        output wire                                             CF,
+        output wire                                             CG,
+        output wire                                             DP,
+        
+        output wire                                             AN0,
+        output wire                                             AN1,
+        output wire                                             AN2,
+        output wire                                             AN3,
+        output wire                                             AN4,
+        output wire                                             AN5,
+        output wire                                             AN6,
+        output wire                                             AN7,
+                                                             
     
     //=====================================================================
     // LED
     //=====================================================================
-        output wire                                             LD0_RED,
-        output wire                                             LD0_GREEN,
-        output wire                                             LD0_BLUE,
+        output wire                                             LD0,
+        output wire                                             LD1,
+        output wire                                             LD2,
         
-        output wire                                             LD1_RED,
-        output wire                                             LD1_GREEN,
-        output wire                                             LD1_BLUE,
-        
-        output wire                                             LD2_RED,
-        output wire                                             LD2_GREEN,
-        output wire                                             LD2_BLUE,
-        
-        output wire                                             LD3_RED,
-        output wire                                             LD3_GREEN,
-        output wire                                             LD3_BLUE,
-        
+        output wire                                             LD3,
         output wire                                             LD4,
         output wire                                             LD5,
+        
         output wire                                             LD6,
         output wire                                             LD7,
+        output wire                                             LD8,
+        
+        output wire                                             LD9,
+        output wire                                             LD10,
+        output wire                                             LD11,
+        
+        output wire                                             LD12,
+        output wire                                             LD13,
+        output wire                                             LD14,
+        output wire                                             LD15,
         
         
     //=====================================================================
@@ -121,6 +152,11 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
         
         wire                                                    TDO_i;
         wire                                                    TDO_valid;
+        
+        wire  [4 : 0]                                           five_way_keys;
+        wire  [4 : 0]                                           five_way_keys_debounced;
+        logic                                                   int0;
+        
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // MMCM
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -132,6 +168,42 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
             .clk_in (OSC_IN)
         ); 
         
+    
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // 5 way navigation switch
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        assign five_way_keys[0] = BTNL;
+        assign five_way_keys[1] = BTNR;
+        assign five_way_keys[2] = BTNU;
+        assign five_way_keys[3] = BTND;
+        assign five_way_keys[4] = BTNC;
+        
+        genvar i;
+        
+        generate
+            
+            for (i = 0; i < 5; i = i + 1) begin: gen_keys
+            
+                
+                switch_debouncer  #(.TIMER_VALUE (100000)) switch_debouncer_i (
+                    .clk (clk_main),
+                    .reset_n (reset_n),
+            
+                    .data_in (five_way_keys[i]),
+                    .data_out (five_way_keys_debounced[i])
+                );
+                
+            end 
+            
+        endgenerate
+        
+        always_ff @(posedge clk_main, negedge reset_n) begin
+            if (!reset_n) begin
+                int0 <= 0;
+            end else begin
+                int0 <= |five_way_keys_debounced;
+            end
+        end
         
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // CPU
@@ -140,8 +212,10 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
        PulseRain_GRV3000D_Platform_Nexys PulseRain_GRV3000D_Platform_Nexys_i (
             .uart_RXD           (UART_RXD),
             .uart_TXD           (UART_TXD),
-            .gpio_gpio_in       ({8'd0, BTN3, BTN2, BTN1, BTN0, SW3, SW2, SW1, SW0}),
+            .gpio_gpio_in       ({SW7, SW6, SW5, SW4, SW3, SW2, SW1, SW0, 3'd0, five_way_keys_debounced}),
             .gpio_gpio_out      (gpio_out),
+            
+            .INTx ({1'b0, int0}),
             
             .rot_encoder_encoder_clk (PMOD_ENCODER_CLK),
             .rot_encoder_encoder_dt  (PMOD_ENCODER_DT),
@@ -171,26 +245,46 @@ module PulseRain_GRV3000D_Platform_NexysA7_100T #(parameter sim = 0) (
                     
         assign TDO = TDO_valid ? TDO_i : 1'bZ;
         
-        assign LD0_RED          = processor_paused;
-        assign LD0_GREEN        = ~processor_paused;
-        assign LD0_BLUE         = 1'b0;
+        assign LD0              = processor_paused;
+        assign LD1              = ~processor_paused;
+        assign LD2              = 1'b0;
             
-        assign LD1_RED          = 1'b0; // gpio_out[3];
-        assign LD1_GREEN        = 1'b0; // gpio_out[4];
-        assign LD1_BLUE         = 1'b0; // gpio_out[5];
+        assign LD3              = BTNL;
+        assign LD4              = BTNR;
+        assign LD5              = BTNU;
         
-        assign LD2_RED          = 1'b0; // gpio_out[6];
-        assign LD2_GREEN        = 1'b0; // gpio_out[7];
-        assign LD2_BLUE         = 1'b0; // gpio_out[8];
+        assign LD6              = BTND;
+        assign LD7              = BTNC;
+        assign LD8              = 1'b0; // gpio_out[8];
         
-        assign LD3_RED          = gpio_out[15];
-        assign LD3_GREEN        = 1'b0; //gpio_out[10];
-        assign LD3_BLUE         = ~gpio_out[15]; //gpio_out[11];
+        assign LD9              = gpio_out[15];
+        assign LD10             = 1'b0;
+        assign LD11             = 1'b0;
         
-        assign LD4              = gpio_out[12];
-        assign LD5              = gpio_out[13];
-        assign LD6              = gpio_out[14];
-        assign LD7              = gpio_out[15];
+        assign LD12             = gpio_out[12];
+        assign LD13             = gpio_out[13];
+        assign LD14             = gpio_out[14];
+        assign LD15             = gpio_out[15];
+        
+        assign CA               = ~gpio_out[0];
+        assign CB               = ~gpio_out[1];
+        assign CC               = ~gpio_out[2];
+        assign CD               = ~gpio_out[3];
+        assign CE               = ~gpio_out[4];
+        assign CF               = ~gpio_out[5];
+        assign CG               = ~gpio_out[6];
+        assign DP               = ~gpio_out[7];
+        
+        assign AN0              = ~gpio_out[8];
+        assign AN1              = ~gpio_out[9];
+        assign AN2              = ~gpio_out[10];
+        assign AN3              = ~gpio_out[11];
+        assign AN4              = 1'b1;
+        assign AN5              = 1'b1;
+        assign AN6              = 1'b1;
+        assign AN7              = 1'b1;
+        
+        
                 
 endmodule
 
