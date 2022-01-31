@@ -3,7 +3,7 @@ Software for PulseRain GRV3000D
 
 ## Update the FPGA Flash Image
 
-To update the FPGA Flash image, please install the Xilinx Vivado Lab Tools First
+1. To update the FPGA Flash image, please install the Xilinx Vivado Lab Tools First
 
 The Xilinx Vivado Lab Solution 2021.2 for Windows can be downloaded from
 
@@ -14,4 +14,13 @@ The Xilinx Vivado Lab Solution 2021.2 for Windows can be downloaded from
 And after download, extracting the Xilinx_Vivado_Lab_Win_2021.2_1021_0703.tar.gz, and run the 
 
 Xilinx_Vivado_Lab_Win_2021.2_1021_0703\bin\xsetup.bat as administrator
+
+
+2. Launch Xilinx Vivado Lab Edition
+
+On Windows, if it can not be found on the Start Menu, it can be launched from C:\Xilinx\Vivado_Lab\2021.2\bin\vivado_lab.bat
+
+After launching, please open the hardware manager
+
+![Vivado Lab Edition](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/vivado_lab_edition_cover.png)
 
