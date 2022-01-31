@@ -36,3 +36,9 @@ After launching, please open the hardware manager
 
 ![add mem device](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/add_mem_device.png)
 
+
+6. In the Dialogue of "Add Configuration Memory Device", please choose s25fl128sxxxxxx0-spi-x1_x2_x4, as shown below
+
+![config mem list](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/config_mem_device_list.png)
+
+ 
