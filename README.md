@@ -41,4 +41,16 @@ After launching, please open the hardware manager
 
 ![config mem list](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/config_mem_device_list.png)
 
- 
+
+7. After selecting the Configuration Memory Device, you can click ok to program the configuration memory device right away, or right click the s25fl128sxxxxxx0-spi-x1_x2_x4 device, and choose "Program Configuration Memory Device ..."
+![ok](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/ok.png)
+![program](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/program.png)
+
+8. In the dialogue of "Program Configuration Memory Device", select the correspondent .bin file in the Configuration file, as shown below
+
+![program config mem](https://github.com/PulseRain/GRV3000D_Software/raw/main/media/program_config_mem.png)
+
+The program operation may take about a minute
+
+
+9. After that, please power cycle the board. For the Nexys board, please click "PROG" button after power cycle, to load the FPGA image
