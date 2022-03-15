@@ -279,14 +279,23 @@ void setup() {
 
 }
 
+float kk = 99.7;
+float kl = 0.3;
+
 void loop() {
   static int i = 0;
   static int count_step = 1;
   uint8_t k;
-
+  
+  
   i = i + count_step;
   Serial.print(i);
   Serial.write("\n");
+
+  kl = kl + 0.1;
+  kk = kk + kl;
+  
+  Serial.println (kk, 2);
   
   SEVEN_SEG_DISPLAY.set_display_value(i, 1);
 
