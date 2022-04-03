@@ -14,43 +14,45 @@ void setup() {
     *REG_CODEC_AD_STATUS_REG = 0;
     *REG_CODEC_DA_STATUS_REG = 0;
 
-   do {
+    delay(1000);
+    
+    do {
         
         t = *REG_CODEC_AD_DATA_REG;
         ad = *REG_CODEC_AD_STATUS_REG;
         
         
-   } while (ad & 2);
+    } while (ad & 2);
 
-   do {
+    do {
         
         *REG_CODEC_DA_DATA_REG = 0;
         da = *REG_CODEC_DA_STATUS_REG;
         
         
-   } while ((da & 4) == 0);
+    } while ((da & 4) == 0);
 
-  Serial.println ("Enable CODEC");
+    Serial.println ("Enable CODEC");
   
-  *REG_CODEC_AD_STATUS_REG = 1;
-  *REG_CODEC_DA_STATUS_REG = 1;
+    *REG_CODEC_AD_STATUS_REG = 1;
+    *REG_CODEC_DA_STATUS_REG = 1;
   
-   do {
-      c = 0;
+    do {
+        c = 0;
 
-      if (Serial.available()) {
+        if (Serial.available()) {
             c = Serial.read();    
-      }
+        }
 
-      ad = *REG_CODEC_AD_STATUS_REG;
+        ad = *REG_CODEC_AD_STATUS_REG;
 
-      if (ad & 2) {
-        //Serial.println("ddd");
-        t = *REG_CODEC_AD_DATA_REG;
-        *REG_CODEC_DA_DATA_REG = t;
-      }
+        if (ad & 2) {
+            //Serial.println("ddd");
+            t = *REG_CODEC_AD_DATA_REG;
+            *REG_CODEC_DA_DATA_REG = t;
+        }
       
-   } while ((c != 'q') &&  (c != 'Q'));
+    } while ((c != 'q') &&  (c != 'Q'));
 }
 
 
