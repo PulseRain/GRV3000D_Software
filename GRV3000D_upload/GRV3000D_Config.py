@@ -373,8 +373,8 @@ class Reindeer_OCD:
                     data_capture = 1
             
             elif (data_capture):
-                if (data_match):
-                    addr = int(data_match.group(1), 16)
+                if (data_match4 or data_match3 or data_match2 or data_match1):
+                    addr = int(data_match1.group(1), 16)
                     #print ("-- %x " % addr)
                     
                     if (data_match4):
