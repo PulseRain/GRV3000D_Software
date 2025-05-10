@@ -350,7 +350,10 @@ class Reindeer_OCD:
         
     def _load_section (self, all_sections, section_name, data_list, data_length):
         section_head = re.compile ("^Contents\sof\ssection\s([\.|\w]*)")
-        data_regexp = re.compile ("^(\w*)\s(\w*)\s(\w*)\s(\w*)\s(\w*)")
+        data_regexp4 = re.compile ("^(\w*)\s+(\w*)\s+(\w*)\s+(\w*)\s+(\w*)")
+        data_regexp3 = re.compile ("^(\w*)\s+(\w*)\s+(\w*)\s+(\w*)")
+        data_regexp2 = re.compile ("^(\w*)\s+(\w*)\s+(\w*)")
+        data_regexp1 = re.compile ("^(\w*)\s+(\w*)")
 
         ##print ("-------------- section_name = ", section_name, " data_length = ", data_length)
         
@@ -359,8 +362,10 @@ class Reindeer_OCD:
         for line in all_sections:
             line_strip = line.strip()
             head_match = re.search (section_head, line_strip)
-            data_match = re.search (data_regexp, line_strip)
-        
+            data_match4 = re.search (data_regexp4, line_strip)
+            data_match3 = re.search (data_regexp3, line_strip)
+            data_match2 = re.search (data_regexp2, line_strip)
+            data_match1 = re.search (data_regexp1, line_strip)
                                 
             if (head_match):
                 data_capture = 0
@@ -371,8 +376,21 @@ class Reindeer_OCD:
                 if (data_match):
                     addr = int(data_match.group(1), 16)
                     #print ("-- %x " % addr)
+                    
+                    if (data_match4):
+                        data_match = data_match4
+                        s = 4
+                    elif (data_match3):
+                        data_match = data_match3
+                        s = 3
+                    elif (data_match2):
+                        data_match = data_match2
+                        s = 2
+                    else:
+                        data_match = data_match1
+                        s = 1
             
-                    for i in range(4):
+                    for i in range(s):
                         if (data_match.group(i + 2) != ""):
                             data_val = int(data_match.group(i + 2), 16)
                             #print ("i = ", i, "data_val = %x" % data_val)
@@ -431,7 +449,7 @@ class Reindeer_OCD:
         is_text_list = []
 
         total_sections = 0
-        
+        idx = 0
         for section_name, section_size, section_vma, section_lma in section_list:
             
             ###bin_file = os.path.splitext(elf_file)[0] + section_name + '.bin'
@@ -444,12 +462,12 @@ class Reindeer_OCD:
             ###with open(os.devnull, 'w')  as FNULL:       
             ###    subprocess.run([self.objcopy, '--dump-section', section_name + '=' + bin_file, elf_file], stdout=FNULL, stderr=FNULL )
                                 
-            if ('LOAD' in section_property_list[total_sections]):
+            if ('LOAD' in section_property_list[idx]):
                 ###try:
                 
                 name_list.append(section_name)
                 
-                if ('CODE' in section_property_list[total_sections]):
+                if ('CODE' in section_property_list[idx]):
                     pram0_dram1_list.append(0)
                     
                     if (section_name.startswith("text")):
@@ -481,7 +499,8 @@ class Reindeer_OCD:
 
                 ###f.close()
                 total_sections = total_sections + 1
-
+            
+            idx = idx + 1
         
         
         byte_index = 0
